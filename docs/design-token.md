@@ -1,101 +1,41 @@
 # Lensa — Design Tokens
 
-Tema: warm film photography. Netral hangat, aksen burnt-orange, Fraunces untuk display.
+Tema: Warm film photography. Netral hangat, aksen burnt-orange, Fraunces untuk display, dan efek dot-grid background.
 
-## CSS Variables
+## CSS Variables (Tailwind v4 `@theme`)
+
+Sesuai dengan Next.js 15 dan Tailwind CSS v4, token didefinisikan di `app/globals.css`:
 
 ```css
-/* app/globals.css */
-:root {
-  --color-bg:            #FAF7F2;
-  --color-surface:       #FFFFFF;
-  --color-surface-muted: #F1ECE3;
-  --color-border:        #E2D9CC;
+@theme {
+  /* Colors */
+  --color-bg: #f7f3eb; /* Warm off-white */
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1ece3;
+  --color-border: #e2d9cc;
 
-  --color-text:          #1A1815;
-  --color-text-muted:    #6B6358;
-  --color-text-inverse:  #FAF7F2;
+  --color-text-main: #1a1815;
+  --color-text-muted: #6b6358;
 
-  --color-primary:       #C2410C;
-  --color-primary-hover: #9A3412;
-  --color-primary-soft:  #FEF0E7;
+  --color-primary: #c2410c; /* Burnt orange */
+  --color-primary-hover: #9a3412;
+  --color-primary-soft: #fef0e7;
 
-  --color-danger:        #B91C1C;
-  --color-success:       #15803D;
-  --color-warning:       #A16207;
+  --color-danger: #b91c1c;
 
+  /* Typography */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+
+  /* Radius */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-pill: 999px;
 
+  /* Shadows */
   --shadow-sm: 0 1px 2px rgba(26, 24, 21, 0.06);
   --shadow-md: 0 4px 12px rgba(26, 24, 21, 0.08);
 }
 ```
-
-## Tailwind Config (extend)
-
-```ts
-// tailwind.config.ts
-export default {
-  theme: {
-    extend: {
-      colors: {
-        bg: 'var(--color-bg)',
-        surface: 'var(--color-surface)',
-        'surface-muted': 'var(--color-surface-muted)',
-        border: 'var(--color-border)',
-        text: 'var(--color-text)',
-        'text-muted': 'var(--color-text-muted)',
-        primary: {
-          DEFAULT: 'var(--color-primary)',
-          hover: 'var(--color-primary-hover)',
-          soft: 'var(--color-primary-soft)',
-        },
-        danger: 'var(--color-danger)',
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Fraunces', 'Georgia', 'serif'],
-      },
-      borderRadius: {
-        sm: 'var(--radius-sm)',
-        md: 'var(--radius-md)',
-        lg: 'var(--radius-lg)',
-      },
-      boxShadow: {
-        sm: 'var(--shadow-sm)',
-        md: 'var(--shadow-md)',
-      },
-    },
-  },
-};
-```
-
-## Tipografi
-
-| Peran | Font | Size | Weight | Line |
-|---|---|---|---|---|
-| Display / H1 | Fraunces | 32px (40px desktop) | 600 | 1.15 |
-| H2 | Fraunces | 24px | 600 | 1.2 |
-| H3 | Inter | 18px | 600 | 1.3 |
-| Body | Inter | 15px | 400 | 1.55 |
-| Caption / meta | Inter | 13px | 400 | 1.4 |
-| Button | Inter | 14px | 500 | 1 |
-
-## Spacing Scale
-
-`4, 8, 12, 16, 24, 32, 48, 64`
-
-## Komponen Wajib (shadcn/ui)
-
-- Button: primary, secondary, ghost, danger
-- Input, Textarea
-- Card: post, profile
-- Avatar
-- Skeleton
-- EmptyState (custom)
-- Toast (sonner)
-- Dialog (delete / report / block)
-- Tabs (search & admin)
