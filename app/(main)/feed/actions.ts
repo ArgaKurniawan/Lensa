@@ -52,6 +52,54 @@ export async function toggleLike(
   }
 }
 
+export type ToggleBookmarkResult = {
+  success?: boolean
+  error?: string
+}
+
+export async function toggleBookmark(
+  postId: string,
+  hasBookmarked: boolean
+): Promise<ToggleBookmarkResult> {
+  const supabase = await createClient()
+
+  // 1. Cek autentikasi user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Sesi kamu telah berakhir. Silakan login terlebih dahulu.' }
+  }
+
+  try {
+    if (hasBookmarked) {
+      // 2a. Jika sudah di-bookmark, hapus dari tabel bookmarks
+      const { error } = await supabase
+        .from('bookmarks')
+        .delete()
+        .match({ user_id: user.id, post_id: postId })
+
+      if (error) {
+        return { error: `Gagal menghapus simpanan: ${error.message}` }
+      }
+    } else {
+      // 2b. Jika belum di-bookmark, simpan ke tabel bookmarks
+      const { error } = await supabase
+        .from('bookmarks')
+        .insert({ user_id: user.id, post_id: postId })
+
+      if (error) {
+        return { error: `Gagal menyimpan postingan: ${error.message}` }
+      }
+    }
+
+    return { success: true }
+  } catch (err: any) {
+    return { error: err?.message || 'Terjadi kesalahan sistem saat memproses simpanan.' }
+  }
+}
+
 export type AddCommentResult = {
   success?: boolean
   error?: string

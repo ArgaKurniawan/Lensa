@@ -1,7 +1,6 @@
 import {
   MessageCircle,
   Trash2,
-  Bookmark,
   Share2,
   MapPin,
   Camera,
@@ -11,6 +10,7 @@ import {
 import type { PostWithAuthor } from '@/types'
 import { timeAgo } from '@/lib/utils'
 import { LikeButton } from '@/components/post/like-button'
+import { BookmarkButton } from '@/components/post/bookmark-button'
 import { CommentSection } from '@/components/post/comment-section'
 
 interface PostCardProps {
@@ -171,7 +171,7 @@ export function PostCard({ post }: PostCardProps) {
           </button>
         </div>
 
-        {/* Kanan: Hapus, Simpan, Bagikan */}
+        {/* Kanan: Hapus, Simpan (Bookmark), Bagikan */}
         <div className="flex items-center gap-1">
           <button
             type="button"
@@ -181,13 +181,10 @@ export function PostCard({ post }: PostCardProps) {
             <Trash2 className="h-4 w-4" />
           </button>
 
-          <button
-            type="button"
-            aria-label="Simpan postingan"
-            className="rounded-lg p-2 text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-primary)]"
-          >
-            <Bookmark className="h-4 w-4" />
-          </button>
+          <BookmarkButton
+            postId={post.id}
+            initialHasBookmarked={post.has_bookmarked}
+          />
 
           <button
             type="button"

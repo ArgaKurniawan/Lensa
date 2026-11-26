@@ -27,6 +27,7 @@ export interface PostWithAuthor {
   like_count: number
   comment_count: number
   has_liked: boolean
+  has_bookmarked: boolean
   comments: CommentWithAuthor[]
   author: PostAuthor
 }

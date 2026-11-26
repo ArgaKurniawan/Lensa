@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 export default async function FeedPage() {
   const supabase = await createClient()
 
-  // Ambil data user yang sedang login untuk mengecek status like
+  // Ambil data user yang sedang login untuk mengecek status like & bookmark
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -15,7 +15,7 @@ export default async function FeedPage() {
   let queryError: any = null
   let rawPosts: any[] = []
 
-  // 1. Coba query utama dengan relasi author, tags, likes, dan comments(author)
+  // 1. Coba query utama dengan relasi author, tags, likes, comments, dan bookmarks
   const primaryResult = await supabase
     .from('posts')
     .select(`
@@ -31,6 +31,9 @@ export default async function FeedPage() {
         )
       ),
       likes (
+        user_id
+      ),
+      bookmarks (
         user_id
       ),
       comments (
@@ -65,6 +68,9 @@ export default async function FeedPage() {
         likes (
           user_id
         ),
+        bookmarks (
+          user_id
+        ),
         comments (
           id,
           body,
@@ -82,12 +88,15 @@ export default async function FeedPage() {
       rawPosts = fallbackResult.data
       queryError = null
     } else {
-      // 3. Fallback terakhir: Ambil posts, likes, dan comments dasar
+      // 3. Fallback terakhir: Ambil posts, likes, bookmarks, dan comments dasar
       const basicResult = await supabase
         .from('posts')
         .select(`
           *,
           likes (
+            user_id
+          ),
+          bookmarks (
             user_id
           ),
           comments (
@@ -151,6 +160,11 @@ export default async function FeedPage() {
       ? Array.isArray(p.likes) && p.likes.some((l: any) => l.user_id === user.id)
       : false
 
+    // Periksa apakah user saat ini sudah me-bookmark postingan ini
+    const hasBookmarked = user
+      ? Array.isArray(p.bookmarks) && p.bookmarks.some((b: any) => b.user_id === user.id)
+      : false
+
     // Format dan urutkan komentar ascending (terlama di atas)
     const comments: CommentWithAuthor[] = (p.comments || [])
       .map((c: any) => {
@@ -187,6 +201,7 @@ export default async function FeedPage() {
       like_count: p.like_count ?? 0,
       comment_count: p.comment_count ?? 0,
       has_liked: hasLiked,
+      has_bookmarked: hasBookmarked,
       comments,
       author,
     }
