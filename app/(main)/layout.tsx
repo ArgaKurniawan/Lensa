@@ -1,5 +1,5 @@
 import { Sidebar } from '@/components/layout/sidebar'
-import { MobileNavbar } from '@/components/layout/navbar'
+import { MobileNav } from '@/components/layout/mobile-nav'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
@@ -26,13 +26,13 @@ export default async function MainLayout({ children }: { children: React.ReactNo
       {/* Sidebar kiri — fixed pada desktop */}
       <Sidebar currentUserUsername={currentUserUsername} />
 
-      {/* Area konten utama */}
+      {/* Area konten utama dengan padding bawah khusus mobile agar tidak tertutup nav */}
       <main className="flex-1 md:ml-64">
-        <div className="mx-auto max-w-2xl px-4 py-6">{children}</div>
+        <div className="mx-auto max-w-2xl px-4 py-6 pb-20 md:pb-0">{children}</div>
       </main>
 
-      {/* Mobile Navbar — tampil di bawah layar pada perangkat kecil */}
-      <MobileNavbar currentUserUsername={currentUserUsername} />
+      {/* Mobile Navigation bar — fixed pada mobile */}
+      <MobileNav />
     </div>
   )
 }

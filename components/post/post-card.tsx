@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   MessageCircle,
   Share2,
@@ -31,11 +32,13 @@ export function PostCard({ post, currentUserId }: PostCardProps) {
           href={`/profile/${post.author.username}`}
           className="flex items-center gap-3 transition-opacity hover:opacity-85"
         >
-          {/* Avatar User */}
+          {/* Avatar User dengan Next.js Image */}
           {post.author.avatar_url ? (
-            <img
+            <Image
               src={post.author.avatar_url}
               alt={post.author.display_name}
+              width={40}
+              height={40}
               className="h-10 w-10 rounded-full object-cover ring-1 ring-[var(--color-border)]"
             />
           ) : (
@@ -79,17 +82,18 @@ export function PostCard({ post, currentUserId }: PostCardProps) {
         </button>
       </header>
 
-      {/* 2. Gambar (Rasio 4:3) dengan Tag <img> Biasa & Overlay Gradien */}
+      {/* 2. Gambar (Rasio 4:3) dengan Next.js Image & Overlay Gradien */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--color-surface-muted)]">
-        <img
+        <Image
           src={post.image_url}
-          alt={post.title}
-          className="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.02]"
-          loading="lazy"
+          alt={post.title || 'Foto analog'}
+          fill
+          sizes="(max-width: 768px) 100vw, 600px"
+          className="object-cover transition-transform duration-500 hover:scale-[1.02]"
         />
 
         {/* Overlay Gradien Hitam di Atas Gambar */}
-        <div className="absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/75 via-black/35 to-transparent px-4 py-3 font-mono text-[11px] tracking-wider text-white/95 uppercase">
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/75 via-black/35 to-transparent px-4 py-3 font-mono text-[11px] tracking-wider text-white/95 uppercase">
           <span className="drop-shadow-sm">{post.frame_info || 'FRAME • 35MM'}</span>
           <span className="rounded bg-black/40 px-1.5 py-0.5 font-bold tracking-widest text-[10px] text-amber-300 backdrop-blur-xs">
             35MM
