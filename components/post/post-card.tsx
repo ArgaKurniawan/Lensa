@@ -25,27 +25,29 @@ export function PostCard({ post, currentUserId }: PostCardProps) {
   const isOwner = Boolean(currentUserId && currentUserId === post.author_id)
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm transition-shadow hover:shadow-md">
+    <article className="relative w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm transition-shadow hover:shadow-md">
       {/* 1. Header */}
       <header className="flex items-center justify-between p-4 sm:px-6">
         <Link
           href={`/profile/${post.author.username}`}
           className="flex items-center gap-3 transition-opacity hover:opacity-85"
         >
-          {/* Avatar User dengan Next.js Image */}
-          {post.author.avatar_url ? (
-            <Image
-              src={post.author.avatar_url}
-              alt={post.author.display_name}
-              width={40}
-              height={40}
-              className="h-10 w-10 rounded-full object-cover ring-1 ring-[var(--color-border)]"
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary-soft)] text-sm font-bold text-[var(--color-primary)]">
-              {post.author.display_name.charAt(0).toUpperCase()}
-            </div>
-          )}
+          {/* Avatar User dengan pembungkus relative & rounded-full */}
+          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-[var(--color-border)]">
+            {post.author.avatar_url ? (
+              <Image
+                src={post.author.avatar_url}
+                alt={post.author.display_name}
+                width={40}
+                height={40}
+                className="h-full w-full object-cover rounded-full"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-[var(--color-primary-soft)] text-sm font-bold text-[var(--color-primary)]">
+                {post.author.display_name.charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
 
           {/* Info Author & Meta */}
           <div className="flex flex-col">
@@ -82,7 +84,7 @@ export function PostCard({ post, currentUserId }: PostCardProps) {
         </button>
       </header>
 
-      {/* 2. Gambar (Rasio 4:3) dengan Next.js Image & Overlay Gradien */}
+      {/* 2. Gambar Utama Postingan (Rasio 4:3) dengan Next.js Image fill & Overlay Gradien */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--color-surface-muted)]">
         <Image
           src={post.image_url}
@@ -92,8 +94,8 @@ export function PostCard({ post, currentUserId }: PostCardProps) {
           className="object-cover transition-transform duration-500 hover:scale-[1.02]"
         />
 
-        {/* Overlay Gradien Hitam di Atas Gambar */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/75 via-black/35 to-transparent px-4 py-3 font-mono text-[11px] tracking-wider text-white/95 uppercase">
+        {/* Overlay Gradien Hitam di Atas Gambar dengan z-10 */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between bg-gradient-to-b from-black/75 via-black/35 to-transparent px-4 py-3 font-mono text-[11px] tracking-wider text-white/95 uppercase">
           <span className="drop-shadow-sm">{post.frame_info || 'FRAME • 35MM'}</span>
           <span className="rounded bg-black/40 px-1.5 py-0.5 font-bold tracking-widest text-[10px] text-amber-300 backdrop-blur-xs">
             35MM
