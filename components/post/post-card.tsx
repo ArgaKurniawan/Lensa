@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import {
   MessageCircle,
   Share2,
@@ -26,7 +27,10 @@ export function PostCard({ post, currentUserId }: PostCardProps) {
     <article className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm transition-shadow hover:shadow-md">
       {/* 1. Header */}
       <header className="flex items-center justify-between p-4 sm:px-6">
-        <div className="flex items-center gap-3">
+        <Link
+          href={`/profile/${post.author.username}`}
+          className="flex items-center gap-3 transition-opacity hover:opacity-85"
+        >
           {/* Avatar User */}
           {post.author.avatar_url ? (
             <img
@@ -43,7 +47,7 @@ export function PostCard({ post, currentUserId }: PostCardProps) {
           {/* Info Author & Meta */}
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <span className="font-sans text-sm font-semibold text-[var(--color-text-main)]">
+              <span className="font-sans text-sm font-semibold text-[var(--color-text-main)] hover:text-[var(--color-primary)] transition-colors">
                 {post.author.display_name}
               </span>
               <span className="text-xs text-[var(--color-text-muted)]">
@@ -63,7 +67,7 @@ export function PostCard({ post, currentUserId }: PostCardProps) {
               </div>
             )}
           </div>
-        </div>
+        </Link>
 
         {/* Tombol Opsi */}
         <button

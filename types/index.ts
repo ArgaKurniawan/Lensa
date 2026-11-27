@@ -4,6 +4,19 @@ export interface PostAuthor {
   avatar_url: string | null
 }
 
+export interface Profile {
+  id: string
+  username: string
+  display_name: string
+  bio: string | null
+  avatar_url: string | null
+  role?: 'user' | 'admin'
+  follower_count: number
+  following_count: number
+  post_count: number
+  created_at: string
+}
+
 export interface CommentWithAuthor {
   id: string
   body: string
