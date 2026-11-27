@@ -59,7 +59,7 @@ export type ToggleBookmarkResult = {
 
 export async function toggleBookmark(
   postId: string,
-  hasBookmarked: boolean
+  isBookmarked: boolean
 ): Promise<ToggleBookmarkResult> {
   const supabase = await createClient()
 
@@ -73,8 +73,8 @@ export async function toggleBookmark(
   }
 
   try {
-    if (hasBookmarked) {
-      // 2a. Jika sudah di-bookmark, hapus dari tabel bookmarks
+    if (isBookmarked) {
+      // 2a. Jika sudah di-bookmark, lakukan DELETE dari tabel bookmarks
       const { error } = await supabase
         .from('bookmarks')
         .delete()
@@ -84,7 +84,7 @@ export async function toggleBookmark(
         return { error: `Gagal menghapus simpanan: ${error.message}` }
       }
     } else {
-      // 2b. Jika belum di-bookmark, simpan ke tabel bookmarks
+      // 2b. Jika belum di-bookmark, lakukan INSERT ke tabel bookmarks
       const { error } = await supabase
         .from('bookmarks')
         .insert({ user_id: user.id, post_id: postId })
@@ -94,9 +94,79 @@ export async function toggleBookmark(
       }
     }
 
+    revalidatePath('/feed')
+    revalidatePath('/bookmarks')
+
     return { success: true }
   } catch (err: any) {
     return { error: err?.message || 'Terjadi kesalahan sistem saat memproses simpanan.' }
+  }
+}
+
+export type DeletePostResult = {
+  success?: boolean
+  error?: string
+}
+
+export async function deletePost(
+  postId: string,
+  imagePath: string
+): Promise<DeletePostResult> {
+  const supabase = await createClient()
+
+  // 1. Cek autentikasi user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Sesi kamu telah berakhir. Silakan login terlebih dahulu.' }
+  }
+
+  try {
+    // 2. Verifikasi kepemilikan postingan
+    const { data: post, error: fetchError } = await supabase
+      .from('posts')
+      .select('author_id')
+      .eq('id', postId)
+      .single()
+
+    if (fetchError || !post) {
+      return { error: 'Postingan tidak ditemukan.' }
+    }
+
+    if (post.author_id !== user.id) {
+      return { error: 'Anda tidak berhak menghapus post ini.' }
+    }
+
+    // 3. Hapus file gambar dari Storage bucket post-images jika imagePath ada
+    if (imagePath) {
+      const { error: storageError } = await supabase.storage
+        .from('post-images')
+        .remove([imagePath])
+
+      if (storageError) {
+        console.warn('Gagal menghapus file gambar di Storage:', storageError.message)
+      }
+    }
+
+    // 4. Hapus baris dari tabel posts (relasi comments, likes, post_tags otomatis terhapus via CASCADE)
+    const { error: deleteError } = await supabase
+      .from('posts')
+      .delete()
+      .eq('id', postId)
+
+    if (deleteError) {
+      return { error: `Gagal menghapus postingan: ${deleteError.message}` }
+    }
+
+    // 5. Revalidasi halaman feed dan bookmarks
+    revalidatePath('/feed')
+    revalidatePath('/bookmarks')
+
+    return { success: true }
+  } catch (err: any) {
+    return { error: err?.message || 'Terjadi kesalahan sistem saat menghapus postingan.' }
   }
 }
 
@@ -145,6 +215,7 @@ export async function addComment(
 
     // 4. Revalidasi halaman feed agar komentar & counter terbaru segera muncul
     revalidatePath('/feed')
+    revalidatePath('/bookmarks')
 
     return { success: true }
   } catch (err: any) {

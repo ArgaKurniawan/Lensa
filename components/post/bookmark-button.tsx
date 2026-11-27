@@ -7,25 +7,25 @@ import { cn } from '@/lib/utils'
 
 interface BookmarkButtonProps {
   postId: string
-  initialHasBookmarked: boolean
+  initialIsBookmarked: boolean
 }
 
 export function BookmarkButton({
   postId,
-  initialHasBookmarked,
+  initialIsBookmarked,
 }: BookmarkButtonProps) {
-  const [hasBookmarked, setHasBookmarked] = useState<boolean>(initialHasBookmarked)
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(initialIsBookmarked)
 
   // Sinkronisasi state jika props server berubah
   useEffect(() => {
-    setHasBookmarked(initialHasBookmarked)
-  }, [initialHasBookmarked])
+    setIsBookmarked(initialIsBookmarked)
+  }, [initialIsBookmarked])
 
   const [isPending, startTransition] = useTransition()
 
-  // React 19 useOptimistic untuk respon UI instan
+  // React 19 useOptimistic untuk perubahan UI instan
   const [optimisticBookmarked, setOptimisticBookmarked] = useOptimistic(
-    hasBookmarked,
+    isBookmarked,
     (_current: boolean, nextValue: boolean) => nextValue
   )
 
@@ -36,7 +36,7 @@ export function BookmarkButton({
     startTransition(async () => {
       // 1. Terapkan update optimis secara instan
       setOptimisticBookmarked(next)
-      setHasBookmarked(next)
+      setIsBookmarked(next)
 
       // 2. Jalankan Server Action di latar belakang
       const res = await toggleBookmark(postId, previous)
@@ -44,7 +44,7 @@ export function BookmarkButton({
       // 3. Rollback jika server mengembalikan error
       if (res?.error) {
         console.error('Bookmark toggle error:', res.error)
-        setHasBookmarked(previous)
+        setIsBookmarked(previous)
       }
     })
   }
@@ -57,7 +57,7 @@ export function BookmarkButton({
       className={cn(
         'rounded-lg p-2 transition-all active:scale-90',
         optimisticBookmarked
-          ? 'text-[var(--color-primary)] bg-[var(--color-primary-soft)]'
+          ? 'text-[var(--color-primary)]'
           : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-primary)]'
       )}
     >

@@ -1,6 +1,5 @@
 import {
   MessageCircle,
-  Trash2,
   Share2,
   MapPin,
   Camera,
@@ -11,13 +10,18 @@ import type { PostWithAuthor } from '@/types'
 import { timeAgo } from '@/lib/utils'
 import { LikeButton } from '@/components/post/like-button'
 import { BookmarkButton } from '@/components/post/bookmark-button'
+import { DeletePostButton } from '@/components/post/delete-post-button'
 import { CommentSection } from '@/components/post/comment-section'
 
 interface PostCardProps {
   post: PostWithAuthor
+  currentUserId?: string | null
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, currentUserId }: PostCardProps) {
+  // Cek apakah user yang sedang login adalah pemilik post ini
+  const isOwner = Boolean(currentUserId && currentUserId === post.author_id)
+
   return (
     <article className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-sm transition-shadow hover:shadow-md">
       {/* 1. Header */}
@@ -171,19 +175,17 @@ export function PostCard({ post }: PostCardProps) {
           </button>
         </div>
 
-        {/* Kanan: Hapus, Simpan (Bookmark), Bagikan */}
+        {/* Kanan: Hapus (Khusus Pemilik), Bookmark (Simpan), Bagikan */}
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            aria-label="Hapus postingan"
-            className="rounded-lg p-2 text-[var(--color-text-muted)] transition-colors hover:bg-red-50 hover:text-[var(--color-danger)]"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+          <DeletePostButton
+            postId={post.id}
+            imagePath={post.image_path}
+            isOwner={isOwner}
+          />
 
           <BookmarkButton
             postId={post.id}
-            initialHasBookmarked={post.has_bookmarked}
+            initialIsBookmarked={post.is_bookmarked}
           />
 
           <button

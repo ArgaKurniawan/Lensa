@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 export default async function FeedPage() {
   const supabase = await createClient()
 
-  // Ambil data user yang sedang login untuk mengecek status like & bookmark
+  // Ambil data user yang sedang login untuk mengecek status like, bookmark, dan kepemilikan
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -15,7 +15,7 @@ export default async function FeedPage() {
   let queryError: any = null
   let rawPosts: any[] = []
 
-  // 1. Coba query utama dengan relasi author, tags, likes, comments, dan bookmarks
+  // 1. Coba query utama dengan relasi author, tags, likes, bookmarks, dan comments(author)
   const primaryResult = await supabase
     .from('posts')
     .select(`
@@ -160,8 +160,8 @@ export default async function FeedPage() {
       ? Array.isArray(p.likes) && p.likes.some((l: any) => l.user_id === user.id)
       : false
 
-    // Periksa apakah user saat ini sudah me-bookmark postingan ini
-    const hasBookmarked = user
+    // Periksa apakah user saat ini sudah mem-bookmark postingan ini
+    const isBookmarked = user
       ? Array.isArray(p.bookmarks) && p.bookmarks.some((b: any) => b.user_id === user.id)
       : false
 
@@ -187,7 +187,9 @@ export default async function FeedPage() {
 
     return {
       id: p.id,
+      author_id: p.author_id,
       image_url: p.image_url,
+      image_path: p.image_path || '',
       frame_info: p.frame_info || 'FRAME • 35MM',
       film_stock: p.film_stock || '',
       camera: p.camera || '',
@@ -201,7 +203,7 @@ export default async function FeedPage() {
       like_count: p.like_count ?? 0,
       comment_count: p.comment_count ?? 0,
       has_liked: hasLiked,
-      has_bookmarked: hasBookmarked,
+      is_bookmarked: isBookmarked,
       comments,
       author,
     }
@@ -227,7 +229,9 @@ export default async function FeedPage() {
           </p>
         </div>
       ) : (
-        posts.map((post) => <PostCard key={post.id} post={post} />)
+        posts.map((post) => (
+          <PostCard key={post.id} post={post} currentUserId={user?.id} />
+        ))
       )}
     </div>
   )

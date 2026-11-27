@@ -1,4 +1,4 @@
-import { Home, Compass, Bell, User, ShieldCheck } from 'lucide-react'
+import { Home, Compass, Bookmark, Bell, User, ShieldCheck } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 export interface NavItem {
@@ -11,6 +11,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Feed', href: '/feed', icon: Home },
   { label: 'Jelajahi', href: '/explore', icon: Compass },
+  { label: 'Tersimpan', href: '/bookmarks', icon: Bookmark },
   { label: 'Notifikasi', href: '/notifications', icon: Bell },
   { label: 'Profil', href: '/profile', icon: User },
   { label: 'Admin', href: '/admin/reports', icon: ShieldCheck, adminOnly: true },

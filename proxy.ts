@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 // Rute yang memerlukan autentikasi (prefix matching)
-const PROTECTED_PREFIXES = ['/feed', '/explore', '/notifications', '/profile', '/new', '/admin']
+const PROTECTED_PREFIXES = ['/feed', '/explore', '/notifications', '/profile', '/new', '/admin', '/bookmarks']
 // Rute auth — user yang sudah login tidak boleh mengaksesnya
 const AUTH_ROUTES = ['/login']
 

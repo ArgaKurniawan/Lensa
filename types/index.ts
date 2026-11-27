@@ -13,7 +13,9 @@ export interface CommentWithAuthor {
 
 export interface PostWithAuthor {
   id: string
+  author_id: string
   image_url: string
+  image_path: string
   frame_info: string
   film_stock: string
   camera: string
@@ -27,7 +29,7 @@ export interface PostWithAuthor {
   like_count: number
   comment_count: number
   has_liked: boolean
-  has_bookmarked: boolean
+  is_bookmarked: boolean
   comments: CommentWithAuthor[]
   author: PostAuthor
 }
